@@ -1,0 +1,24 @@
+[package]
+name = "bouquet"
+version = "0.1.0"
+edition = "2018"
+
+[lib]
+name = "lib"
+path = "src/lib.rs"
+
+[[bin]]
+name = "main"
+path = "src/main.rs"
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
+
+[dependencies.libc]
+version = "0.2"
+default-features = false
+features = ["extra_traits"]
+
