@@ -2,14 +2,26 @@
 name = "bouquet"
 version = "0.1.0"
 edition = "2018"
+default-run = "pc"
+
+[features]
+build-library = [ "libc" ]
+build-binary = [ "libc", "libc_alloc" ]
 
 [lib]
 name = "lib"
 path = "src/lib.rs"
+required-features = ["build-library"]
 
 [[bin]]
-name = "main"
-path = "src/main.rs"
+name = "pc"
+path = "src/pc_main.rs"
+required-features = ["build-binary"]
+
+[[bin]]
+name = "playdate"
+path = "src/playdate_main.rs"
+required-features = ["build-binary"]
 
 [profile.dev]
 panic = "abort"
@@ -17,8 +29,8 @@ panic = "abort"
 [profile.release]
 panic = "abort"
 
-[dependencies.libc]
-version = "0.2"
-default-features = false
-features = ["extra_traits"]
+[dependencies]
+libc = { version = "0.2", default-features = false, features = ["extra_traits"], optional = true }
+
+libc_alloc = { version = "1.0.3", optional = true }
 
