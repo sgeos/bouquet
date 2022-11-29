@@ -2,3 +2,8 @@
 
 - Rust-based no_std distributed client server game engine.
 
+Build instructions:
+```
+cargo run --features="build-binary"
+```
+

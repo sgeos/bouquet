@@ -30,7 +30,7 @@ panic = "abort"
 panic = "abort"
 
 [dependencies]
+hashbrown = "0.12"
 libc = { version = "0.2", default-features = false, features = ["extra_traits"], optional = true }
-
 libc_alloc = { version = "1.0.3", optional = true }
 

@@ -1,5 +1,6 @@
 #![no_std]
 #![no_main]
+#![feature(lang_items)]
 
 #![feature(default_alloc_error_handler)]
 #[global_allocator]
@@ -17,4 +18,7 @@ pub extern "C" fn main(_argc: isize, _argv: *const *const u8) -> isize {
 fn panic(_: &core::panic::PanicInfo) -> ! {
   loop {}
 }
+
+#[lang = "eh_personality"]
+extern "C" fn eh_personality() {}
 
