@@ -1,8 +1,7 @@
-use alloc::{ string::String, vec::Vec, };
+use alloc::{ fmt::Debug, string::String, vec::Vec, };
 use core::{ convert::TryInto, };
 
-use crate::message::{ Message, };
-use crate::message_bus::{ MessageSendee, };
+use crate::message::{ Message, MessageSendee, };
 
 pub struct Terminal {
   pub done: bool,
@@ -16,8 +15,11 @@ impl Terminal {
   }
 }
 
-impl MessageSendee::<Message> for Terminal {
-  fn send(&mut self, message: Message) -> (bool, Vec<Message>) {
+impl<C, S, D> MessageSendee::<C, S, D> for Terminal
+  where C: Clone + Debug, S: Clone + Debug, D: Clone + Debug
+{
+  fn send(&mut self, message: Message::<C, S, D>) -> Vec<Message::<C, S, D>>
+  {
     let mut result = Vec::new();
     match (message, self.done) {
       (Message::Initialize, _) => {
@@ -59,10 +61,12 @@ impl MessageSendee::<Message> for Terminal {
           },
         }
       },
-      (Message::Log(s), _) => log(s),
+      (Message::Client(s), _) => log(format!("Client: {:?}", s)),
+      (Message::Server(s), _) => log(format!("Server: {:?}", s)),
+      (Message::Debug(s), _) => log(format!("Debug: {:?}", s)),
       _ => (),
     }
-    (self.done, result)
+    result
   }
 }
 

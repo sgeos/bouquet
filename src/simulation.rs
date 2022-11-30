@@ -1,7 +1,6 @@
-use alloc::{ vec::Vec, };
+use alloc::{ fmt::Debug, vec::Vec, };
 
-use crate::message::{ Message, };
-use crate::message_bus::{ MessageSendee, };
+use crate::message::{ Message, MessageSendee, };
 
 pub struct Simulation {
   pub done: bool,
@@ -17,8 +16,11 @@ impl Simulation {
   }
 }
 
-impl MessageSendee::<Message> for Simulation {
-  fn send(&mut self, message: Message) -> (bool, Vec<Message>) {
+impl<C, S, D> MessageSendee::<C, S, D> for Simulation
+  where C: Clone + Debug, S: Clone + Debug, D: Clone + Debug
+{
+  fn send(&mut self, message: Message::<C, S, D>) -> Vec<Message::<C, S, D>>
+  {
     let result = Vec::new();
     match message {
       Message::Initialize => self.done = false,
@@ -26,7 +28,7 @@ impl MessageSendee::<Message> for Simulation {
       Message::Update(_) => self.frame += 1,
       _ => (),
     }
-    (self.done, result)
+    result
   }
 }
 
