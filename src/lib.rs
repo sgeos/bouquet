@@ -5,15 +5,12 @@
 extern crate alloc;
 extern crate libc;
 
-use alloc::boxed::Box;
-use alloc::string::String;
-use alloc::vec::Vec;
-use core::convert::TryInto;
-use hashbrown::HashMap;
+use alloc::{ boxed::Box, string::String, vec::Vec, };
+use core::{ convert::TryInto, };
 
-trait MessageSendee {
-  fn send(&mut self, message: Message) -> Vec<Message>;
-}
+mod message;
+
+use message::{ MessageBus, MessageSendee, };
 
 #[derive(Debug, Copy, Clone)]
 enum Message {
@@ -27,8 +24,8 @@ struct Simulation {
   frame: usize,
 }
 
-impl MessageSendee for Simulation {
-  fn send(&mut self, message: Message) -> Vec<Message> {
+impl MessageSendee::<Message> for Simulation {
+  fn send(&mut self, message: Message) -> (bool, Vec<Message>) {
     let result = Vec::new();
     match message {
       Message::Initialize => self.done = false,
@@ -36,7 +33,7 @@ impl MessageSendee for Simulation {
       Message::Update(_) => self.frame += 1,
       //_ => (),
     }
-    result
+    (self.done, result)
   }
 }
 
@@ -44,8 +41,8 @@ struct Terminal {
   done: bool,
 }
 
-impl MessageSendee for Terminal {
-  fn send(&mut self, message: Message) -> Vec<Message> {
+impl MessageSendee::<Message> for Terminal {
+  fn send(&mut self, message: Message) -> (bool, Vec<Message>) {
     let mut result = Vec::new();
     match (message, self.done) {
       (Message::Initialize, _) => {
@@ -89,7 +86,7 @@ impl MessageSendee for Terminal {
       },
       _ => (),
     }
-    result
+    (self.done, result)
   }
 }
 
@@ -118,55 +115,6 @@ fn readline() -> String {
   }
 }
 
-struct MessageBus {
-  done: bool,
-  inbox: Vec::<Message>,
-  outbox: Vec::<Message>,
-  systems: HashMap::<String, Box<dyn MessageSendee>>,
-}
-
-impl MessageBus {
-  fn register<S: Into<String>>(
-    &mut self, name: S, system: Box<dyn MessageSendee>
-  ) {
-    self.systems.insert(name.into(), system);
-  }
-
-  fn unregister<S: Into<String>>(&mut self, name: S) {
-    self.systems.remove(&name.into());
-  }
-}
-
-impl MessageSendee for MessageBus {
-  fn send(&mut self, message: Message) -> Vec<Message> {
-    let result = Vec::new();
-    match message {
-      Message::Initialize |
-      Message::Terminate |
-      Message::Update(_) => {
-        self.outbox.push(message);
-        for message in &self.outbox {
-          match message {
-            Message::Initialize => self.done = false,
-            Message::Terminate => self.done = true,
-            _ => (),
-          }
-          for system in self.systems.values_mut() {
-            let response = system.send(*message);
-            for message in response {
-              self.inbox.push(message);
-            }
-          }
-        }
-        self.outbox.clear();
-        core::mem::swap(&mut self.inbox, &mut self.outbox);
-      },
-      //message => self.inbox.push(message),
-    }
-    result
-  }
-}
-
 #[no_mangle]
 pub extern "C" fn run() {
   log("Hello, Bouquet!");
@@ -178,12 +126,7 @@ pub extern "C" fn run() {
   let terminal = Box::new(Terminal {
     done: false,
   });
-  let mut mb = MessageBus {
-    done: false,
-    inbox: Vec::new(),
-    outbox: Vec::new(),
-    systems: HashMap::new(),
-  };
+  let mut mb = MessageBus::<Message>::new();
 
   mb.register("simulation", simulation);
   mb.register("terminal", terminal);
