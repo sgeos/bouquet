@@ -20,15 +20,14 @@ use terminal::{ Terminal, };
 
 #[no_mangle]
 pub extern "C" fn run() {
-  //log("Hello, Bouquet!");
-
   let simulation = Box::new(Simulation::new());
   let terminal = Box::new(Terminal::new());
   let mut mb = MessageBus::<Message>::new();
+  let mut time = unsafe { libc::time(0 as *mut i64) };
 
   mb.register("simulation", simulation);
   mb.register("terminal", terminal);
-  let mut time = unsafe { libc::time(0 as *mut i64) };
+  mb.send(Message::log("Hello, Bouquet!"));
   mb.send(Message::Initialize);
   while !mb.done {
     let old_time = time;

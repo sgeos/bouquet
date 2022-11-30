@@ -59,6 +59,7 @@ impl MessageSendee::<Message> for Terminal {
           },
         }
       },
+      (Message::Log(s), _) => log(s),
       _ => (),
     }
     (self.done, result)

@@ -24,7 +24,7 @@ impl MessageSendee::<Message> for Simulation {
       Message::Initialize => self.done = false,
       Message::Terminate => self.done = true,
       Message::Update(_) => self.frame += 1,
-      //_ => (),
+      _ => (),
     }
     (self.done, result)
   }

@@ -1,18 +1,18 @@
 use alloc::{ boxed::Box, string::String, vec::Vec, };
 use hashbrown::HashMap;
 
-pub trait MessageSendee<T: Copy + Clone> {
+pub trait MessageSendee<T: Clone> {
   fn send(&mut self, message: T) -> (bool, Vec<T>);
 }
 
-pub struct MessageBus<T: Copy + Clone> {
+pub struct MessageBus<T: Clone> {
   pub done: bool,
   inbox: Vec::<T>,
   outbox: Vec::<T>,
   systems: HashMap::<String, Box<dyn MessageSendee<T>>>,
 }
 
-impl<T: Copy + Clone> MessageBus<T> {
+impl<T: Clone> MessageBus<T> {
   pub fn new() -> MessageBus<T> {
     MessageBus {
       done: false,
@@ -39,7 +39,7 @@ impl<T: Copy + Clone> MessageBus<T> {
   pub fn flush(&mut self) {
     for message in &self.outbox {
       for system in self.systems.values_mut() {
-        let (done, response) = system.send(*message);
+        let (done, response) = system.send(message.clone());
         self.done |= done;
         for message in response {
           self.inbox.push(message);
@@ -51,7 +51,7 @@ impl<T: Copy + Clone> MessageBus<T> {
   }
 }
 
-impl<T: Copy + Clone> MessageSendee<T> for MessageBus<T> {
+impl<T: Clone> MessageSendee<T> for MessageBus<T> {
   fn send(&mut self, message: T) -> (bool, Vec<T>) {
     let result = Vec::new();
     self.push(message);
