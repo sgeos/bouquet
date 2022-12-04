@@ -1,36 +1,17 @@
-[package]
-name = "bouquet"
-version = "0.1.0"
-edition = "2018"
-default-run = "pc"
+[workspace.package]
+version = "0.1.1"
+edition = "2021"
 
-[features]
-build-library = [ "libc" ]
-build-binary = [ "libc", "libc_alloc" ]
-
-[lib]
-name = "lib"
-path = "src/lib.rs"
-required-features = ["build-library"]
-
-[[bin]]
-name = "pc"
-path = "src/pc_main.rs"
-required-features = ["build-binary"]
-
-[[bin]]
-name = "playdate"
-path = "src/playdate_main.rs"
-required-features = ["build-binary"]
+[workspace]
+members = [
+  "pc_client",
+  "playdate_client",
+  "bouquet_ribbon",
+]
 
 [profile.dev]
 panic = "abort"
 
 [profile.release]
 panic = "abort"
-
-[dependencies]
-hashbrown = "0.12"
-libc = { version = "0.2", default-features = false, features = ["extra_traits"], optional = true }
-libc_alloc = { version = "1.0.3", optional = true }
 

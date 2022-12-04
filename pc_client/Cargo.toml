@@ -1,0 +1,19 @@
+[package]
+name = "pc_client"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+name = "pc_client_core"
+path = "src/lib.rs"
+
+[[bin]]
+name = "pc_client"
+path = "src/main.rs"
+
+[dependencies]
+bouquet_ribbon = { path = "../bouquet_ribbon" }
+hashbrown = "0.12"
+libc = { version = "0.2", default-features = false }
+libc_alloc = "1.0.3"
+

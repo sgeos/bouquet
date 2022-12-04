@@ -1,3 +1,7 @@
+#![no_std]
+
+extern crate alloc;
+
 use alloc::{ boxed::Box, fmt::Debug, string::String, vec::Vec, };
 use hashbrown::HashMap;
 

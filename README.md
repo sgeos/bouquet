@@ -4,6 +4,8 @@
 
 Build instructions:
 ```
-cargo run --features="build-binary"
+cargo build --workspace
+cargo run -p pc_client
+cargo run -p playdate_client
 ```
 

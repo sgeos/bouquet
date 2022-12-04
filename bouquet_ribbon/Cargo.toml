@@ -1,0 +1,8 @@
+[package]
+name = "bouquet_ribbon"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+hashbrown = "0.12"
+

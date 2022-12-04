@@ -1,7 +1,6 @@
 use alloc::{ fmt::Debug, string::String, vec::Vec, };
+use bouquet_ribbon::{ Message, MessageSendee, };
 use core::{ convert::TryInto, };
-
-use crate::message::{ Message, MessageSendee, };
 
 pub struct Terminal {
   pub done: bool,

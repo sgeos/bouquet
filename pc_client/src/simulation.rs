@@ -1,6 +1,5 @@
 use alloc::{ fmt::Debug, vec::Vec, };
-
-use crate::message::{ Message, MessageSendee, };
+use bouquet_ribbon::{ Message, MessageSendee, };
 
 pub struct Simulation {
   pub done: bool,

@@ -14,12 +14,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "bouquet"
-version = "0.1.0"
+name = "bouquet_ribbon"
+version = "0.1.1"
 dependencies = [
  "hashbrown",
- "libc",
- "libc_alloc",
 ]
 
 [[package]]
@@ -65,6 +63,26 @@ name = "once_cell"
 version = "1.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "86f0b0d4bf799edbc74508c1e8bf170ff5f41238e5f8225603ca7caaae2b7860"
+
+[[package]]
+name = "pc_client"
+version = "0.1.1"
+dependencies = [
+ "bouquet_ribbon",
+ "hashbrown",
+ "libc",
+ "libc_alloc",
+]
+
+[[package]]
+name = "playdate_client"
+version = "0.1.1"
+dependencies = [
+ "bouquet_ribbon",
+ "hashbrown",
+ "libc",
+ "libc_alloc",
+]
 
 [[package]]
 name = "version_check"
