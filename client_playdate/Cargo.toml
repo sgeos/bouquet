@@ -1,18 +1,19 @@
 [package]
-name = "playdate_client"
+name = "client_playdate"
 version.workspace = true
 edition.workspace = true
 
 [lib]
-name = "playdate_client_core"
+name = "lib_client_playdate"
 path = "src/lib.rs"
 
 [[bin]]
-name = "playdate_client"
+name = "client_playdate"
 path = "src/main.rs"
 
 [dependencies]
 bouquet_ribbon = { path = "../bouquet_ribbon" }
+client_core = { path = "../client_core" }
 hashbrown = "0.12"
 libc = { version = "0.2", default-features = false }
 libc_alloc = "1.0.3"

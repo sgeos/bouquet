@@ -4,6 +4,6 @@
 
 Build instructions:
 ```
-cargo run -p pc_client
+cargo run -p client_pc
 ```
 

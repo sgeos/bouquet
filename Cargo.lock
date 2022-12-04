@@ -27,6 +27,35 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
+name = "client_core"
+version = "0.1.1"
+dependencies = [
+ "bouquet_ribbon",
+]
+
+[[package]]
+name = "client_pc"
+version = "0.1.1"
+dependencies = [
+ "bouquet_ribbon",
+ "client_core",
+ "hashbrown",
+ "libc",
+ "libc_alloc",
+]
+
+[[package]]
+name = "client_playdate"
+version = "0.1.1"
+dependencies = [
+ "bouquet_ribbon",
+ "client_core",
+ "hashbrown",
+ "libc",
+ "libc_alloc",
+]
+
+[[package]]
 name = "getrandom"
 version = "0.2.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -63,26 +92,6 @@ name = "once_cell"
 version = "1.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "86f0b0d4bf799edbc74508c1e8bf170ff5f41238e5f8225603ca7caaae2b7860"
-
-[[package]]
-name = "pc_client"
-version = "0.1.1"
-dependencies = [
- "bouquet_ribbon",
- "hashbrown",
- "libc",
- "libc_alloc",
-]
-
-[[package]]
-name = "playdate_client"
-version = "0.1.1"
-dependencies = [
- "bouquet_ribbon",
- "hashbrown",
- "libc",
- "libc_alloc",
-]
 
 [[package]]
 name = "version_check"

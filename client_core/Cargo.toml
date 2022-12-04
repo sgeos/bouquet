@@ -1,0 +1,8 @@
+[package]
+name = "client_core"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+bouquet_ribbon = { path = "../bouquet_ribbon" }
+

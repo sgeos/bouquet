@@ -1,46 +1,49 @@
 use alloc::{ fmt::Debug, string::String, vec::Vec, };
-use bouquet_ribbon::{ Message, MessageSendee, };
+use bouquet_ribbon::message::{ Message, MessageSendee, };
+use client_core::{ program_state::ProgramState, };
 use core::{ convert::TryInto, };
 
-pub struct Terminal {
-  pub done: bool,
-}
+pub struct Terminal { }
 
 impl Terminal {
   pub fn new() -> Terminal {
-    Terminal {
-      done: false,
-    }
+    Terminal { }
   }
 }
 
-impl<C, S, D> MessageSendee::<C, S, D> for Terminal
+impl<C, S, D>
+  MessageSendee::<ProgramState, C, S, D>
+  for Terminal
   where C: Clone + Debug, S: Clone + Debug, D: Clone + Debug
 {
-  fn send(&mut self, message: Message::<C, S, D>) -> Vec<Message::<C, S, D>>
+  fn send(
+    &mut self,
+    message: Message::<C, S, D>,
+    program_state: &mut ProgramState,
+  ) -> Vec<Message::<C, S, D>>
   {
     let mut result = Vec::new();
-    match (message, self.done) {
-      (Message::Initialize, _) => {
-        self.done = false;
-        log("Initializing program.");
-      },
-      (Message::Terminate, _) => {
-        self.done = true;
-        log("Terminating program.");
-      },
-      (Message::Update(duration), false) => {
+    match message {
+      Message::Initialize => log("Initializing program."),
+      Message::Terminate => log("Terminating program."),
+      Message::Update(duration) => {
+        if program_state.persistent_data.done {
+          return result;
+        }
         prompt(format!("{:>6}> ", duration));
-
         let input = readline();
         let mut args = input.trim().split_whitespace().peekable();
         let command = args.next().unwrap_or("");
         match command.to_lowercase().as_str() {
           "exit" | "quit" => {
-            self.done = true;
             result.push(Message::Terminate);
           },
-          "done" => log(format!("Done: {}", self.done)),
+          "done" => {
+            log(format!("Done: {}", program_state.persistent_data.done));
+          },
+          "frame" => {
+            log(format!("Frame: {}", program_state.last_frame_data.frame));
+          },
           "initialize" => result.push(Message::Initialize),
           "terminate" => result.push(Message::Terminate),
           "update" => {
@@ -60,10 +63,10 @@ impl<C, S, D> MessageSendee::<C, S, D> for Terminal
           },
         }
       },
-      (Message::Client(s), _) => log(format!("Client: {:?}", s)),
-      (Message::Server(s), _) => log(format!("Server: {:?}", s)),
-      (Message::Debug(s), _) => log(format!("Debug: {:?}", s)),
-      _ => (),
+      Message::Client(s) => log(format!("Client: {:?}", s)),
+      Message::Server(s) => log(format!("Server: {:?}", s)),
+      Message::Debug(s) => log(format!("Debug: {:?}", s)),
+      // _ => (),
     }
     result
   }

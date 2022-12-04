@@ -4,8 +4,9 @@ edition = "2021"
 
 [workspace]
 members = [
-  "pc_client",
-  "playdate_client",
+  "client_core",
+  "client_pc",
+  "client_playdate",
   "bouquet_ribbon",
 ]
 

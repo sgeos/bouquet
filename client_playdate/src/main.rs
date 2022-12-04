@@ -8,7 +8,7 @@ static ALLOCATOR: ::libc_alloc::LibcAlloc = ::libc_alloc::LibcAlloc;
 
 use core::ffi::c_char;
 use libc::c_int;
-use playdate_client_core::run;
+use lib_client_playdate::run;
 
 #[no_mangle]
 pub extern "C" fn main(_argc: c_int, _argv: *const *const c_char) -> c_int {

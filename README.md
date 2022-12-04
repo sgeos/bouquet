@@ -5,7 +5,7 @@
 Build instructions:
 ```
 cargo build --workspace
-cargo run -p pc_client
-cargo run -p playdate_client
+cargo run -p client_pc
+cargo run -p client_playdate
 ```
 

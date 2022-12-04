@@ -5,6 +5,6 @@
 
 Build instructions:
 ```
-cargo run -p playdate_client
+cargo run -p client_playdate
 ```
 
