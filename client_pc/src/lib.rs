@@ -7,25 +7,28 @@ extern crate libc;
 
 mod terminal;
 
-use alloc::{ boxed::Box, string::String, };
+use alloc::{ boxed::Box, };
 use bouquet_ribbon::message::{ Message, MessageBus, MessageSendee, };
 use client_core::{ program_state::ProgramState, simulation::Simulation };
+use client_core::message::{ ClientMessage, DebugMessage, ServerMessage, };
 use core::{ convert::TryInto, };
 use terminal::{ Terminal, };
 
 #[no_mangle]
 pub extern "C" fn run() {
   let mut ps = ProgramState::new();
-  let mut mb = MessageBus::<ProgramState, String, String, String>::new();
+  let mut mb = MessageBus::
+    <ProgramState, ClientMessage, ServerMessage, DebugMessage>::new();
   let simulation = Box::new(Simulation::new());
   let terminal = Box::new(Terminal::new());
   let mut time = unsafe { libc::time(0 as *mut i64) };
 
   mb.register("simulation", simulation);
   mb.register("terminal", terminal);
-  mb.send(Message::Client(format!("Hello, Bouquet!")), &mut ps);
-  mb.send(Message::Server(format!("Hello, Bouquet!")), &mut ps);
-  mb.send(Message::Debug(format!("Hello, Bouquet!")), &mut ps);
+  mb.send(
+    Message::Debug(DebugMessage::Log(format!("Hello, Bouquet!"))),
+    &mut ps
+  );
   mb.send(Message::Initialize, &mut ps);
   while !ps.persistent_data.done {
     let old_time = time;

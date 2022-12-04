@@ -1,6 +1,7 @@
-use alloc::{ fmt::Debug, string::String, vec::Vec, };
+use alloc::{ string::String, string::ToString, vec::Vec, };
 use bouquet_ribbon::message::{ Message, MessageSendee, };
 use client_core::{ program_state::ProgramState, };
+use client_core::message::{ ClientMessage, DebugMessage, ServerMessage, };
 use core::{ convert::TryInto, };
 
 pub struct Terminal { }
@@ -11,16 +12,15 @@ impl Terminal {
   }
 }
 
-impl<C, S, D>
-  MessageSendee::<ProgramState, C, S, D>
+impl
+  MessageSendee::<ProgramState, ClientMessage, ServerMessage, DebugMessage>
   for Terminal
-  where C: Clone + Debug, S: Clone + Debug, D: Clone + Debug
 {
   fn send(
     &mut self,
-    message: Message::<C, S, D>,
+    message: Message::<ClientMessage, ServerMessage, DebugMessage>,
     program_state: &mut ProgramState,
-  ) -> Vec<Message::<C, S, D>>
+  ) -> Vec<Message::<ClientMessage, ServerMessage, DebugMessage>>
   {
     let mut result = Vec::new();
     match message {
@@ -35,16 +35,31 @@ impl<C, S, D>
         let mut args = input.trim().split_whitespace().peekable();
         let command = args.next().unwrap_or("");
         match command.to_lowercase().as_str() {
-          "exit" | "quit" => {
-            result.push(Message::Terminate);
+          "client" => {
+            result.push(Message::Client(ClientMessage::Message));
+          },
+          "debug" => {
+            result.push(Message::Debug(DebugMessage::Message));
           },
           "done" => {
             log(format!("Done: {}", program_state.persistent_data.done));
+          },
+          "exit" | "quit" => {
+            result.push(Message::Terminate);
           },
           "frame" => {
             log(format!("Frame: {}", program_state.last_frame_data.frame));
           },
           "initialize" => result.push(Message::Initialize),
+          "log" => {
+            let output =
+              args
+              .fold(String::new(), |a, b| a + " " + b).trim().to_string();
+            result.push(Message::Debug(DebugMessage::Log(output)));
+          },
+          "server" => {
+            result.push(Message::Server(ServerMessage::Message));
+          },
           "terminate" => result.push(Message::Terminate),
           "update" => {
             let duration: usize = args.next()
@@ -63,10 +78,8 @@ impl<C, S, D>
           },
         }
       },
-      Message::Client(s) => log(format!("Client: {:?}", s)),
-      Message::Server(s) => log(format!("Server: {:?}", s)),
-      Message::Debug(s) => log(format!("Debug: {:?}", s)),
-      // _ => (),
+      Message::Debug(DebugMessage::Log(s)) => log(format!("{}", s)),
+      _ => log(format!("{:?}", message)),
     }
     result
   }

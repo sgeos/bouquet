@@ -1,5 +1,6 @@
-use alloc::{ fmt::Debug, vec::Vec, };
+use alloc::{ vec::Vec, };
 use crate::program_state::{ ProgramState, };
+use crate::message::{ ClientMessage, ServerMessage, DebugMessage, };
 use bouquet_ribbon::message::{ Message, MessageSendee, };
 
 pub struct Simulation { }
@@ -10,16 +11,15 @@ impl Simulation {
   }
 }
 
-impl<C, S, D>
-  MessageSendee::<ProgramState, C, S, D>
+impl
+  MessageSendee::<ProgramState, ClientMessage, ServerMessage, DebugMessage>
   for Simulation
-  where C: Clone + Debug, S: Clone + Debug, D: Clone + Debug
 {
   fn send(
     &mut self,
-    message: Message::<C, S, D>,
+    message: Message::<ClientMessage, ServerMessage, DebugMessage>,
     ps: &mut ProgramState,
-  ) -> Vec<Message::<C, S, D>>
+  ) -> Vec<Message::<ClientMessage, ServerMessage, DebugMessage>>
   {
     let result = Vec::new();
     match message {
