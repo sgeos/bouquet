@@ -17,6 +17,7 @@ crate-type = ["staticlib", "cdylib"]
 panic = "abort"
 opt-level = 'z'
 lto = true
+overflow-checks = false
 
 [profile.release]
 panic = "abort"
