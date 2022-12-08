@@ -1,8 +1,12 @@
-use alloc::{ string::String, string::ToString, vec::Vec, };
-use bouquet_ribbon::message::{ Message, MessageSendee, };
-use client_core::{ program_state::ProgramState, };
-use client_core::message::{ ClientMessage, DebugMessage, ServerMessage, };
-use core::{ convert::TryInto, };
+use {
+  alloc::{ string::String, string::ToString, vec::Vec, },
+  bouquet_ribbon::message::{ Message, MessageSendee, },
+  client_core::{
+    program_state::ProgramState,
+    message::{ ClientMessage, DebugMessage, ServerMessage, },
+  },
+  core::{ convert::TryInto, },
+};
 
 pub struct Terminal { }
 

@@ -6,9 +6,11 @@
 #[global_allocator]
 static ALLOCATOR: ::libc_alloc::LibcAlloc = ::libc_alloc::LibcAlloc;
 
-use core::ffi::c_char;
-use libc::c_int;
-use lib_client_pc::run;
+use {
+  core::ffi::c_char,
+  libc::c_int,
+  lib_client_pc::run,
+};
 
 #[no_mangle]
 pub extern "C" fn main(_argc: c_int, _argv: *const *const c_char) -> c_int {

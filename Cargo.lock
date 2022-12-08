@@ -45,17 +45,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "client_playdate"
-version = "0.1.1"
-dependencies = [
- "bouquet_ribbon",
- "client_core",
- "hashbrown",
- "libc",
- "libc_alloc",
-]
-
-[[package]]
 name = "getrandom"
 version = "0.2.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"

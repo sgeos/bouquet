@@ -1,7 +1,11 @@
-use alloc::{ vec::Vec, };
-use crate::program_state::{ ProgramState, };
-use crate::message::{ ClientMessage, ServerMessage, DebugMessage, };
-use bouquet_ribbon::message::{ Message, MessageSendee, };
+use {
+  alloc::{ vec::Vec, },
+  crate::{
+    program_state::ProgramState,
+    message::{ ClientMessage, ServerMessage, DebugMessage, },
+  },
+  bouquet_ribbon::message::{ Message, MessageSendee, },
+};
 
 pub struct Simulation { }
 

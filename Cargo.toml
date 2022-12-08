@@ -6,13 +6,19 @@ edition = "2021"
 members = [
   "client_core",
   "client_pc",
-  "client_playdate",
   "bouquet_ribbon",
+]
+exclude = [
+  "client_playdate",
 ]
 
 [profile.dev]
 panic = "abort"
+opt-level = 'z'
+lto = true
 
 [profile.release]
 panic = "abort"
+opt-level = 'z'
+lto = true
 

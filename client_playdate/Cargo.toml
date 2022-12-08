@@ -1,20 +1,42 @@
 [package]
 name = "client_playdate"
-version.workspace = true
-edition.workspace = true
+version = "0.1.1"
+edition = "2021"
+
+[package.metadata.cargo-xbuild]
+memcpy = false
+sysroot_path = "target/sysroot"
+panic_immediate_abort = false
 
 [lib]
-name = "lib_client_playdate"
+name = "bouquet_test_client"
 path = "src/lib.rs"
+crate-type = ["staticlib", "cdylib"]
 
-[[bin]]
-name = "client_playdate"
-path = "src/main.rs"
+[profile.dev]
+panic = "abort"
+opt-level = 'z'
+lto = true
+
+[profile.release]
+panic = "abort"
+opt-level = 'z'
+lto = true
 
 [dependencies]
+anyhow = { version = "1.0.31", default-features = false }
 bouquet_ribbon = { path = "../bouquet_ribbon" }
+crankstart = { path = "../../crankstart" }
+crankstart-sys = { path = "../../crankstart/crankstart-sys" }
 client_core = { path = "../client_core" }
-hashbrown = "0.12"
+euclid = { version = "0.20.13", default-features = false, features = [ "libm" ] }
+hashbrown = "0.7.2"
+heapless = "0.5.5"
 libc = { version = "0.2", default-features = false }
 libc_alloc = "1.0.3"
+
+[dependencies.cstr_core]
+version = "=0.1.2"
+default-features = false
+features = [ "alloc" ]
 

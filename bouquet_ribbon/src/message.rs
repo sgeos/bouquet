@@ -1,5 +1,9 @@
-use alloc::{ boxed::Box, fmt::Debug, string::String, vec::Vec, };
-use hashbrown::HashMap;
+use {
+  alloc::{
+    boxed::Box, fmt::Debug, string::String, vec::Vec,
+  },
+  hashbrown::HashMap,
+};
 
 #[derive(Debug, Clone)]
 pub enum Message<C, S, D>

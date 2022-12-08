@@ -7,12 +7,16 @@ extern crate libc;
 
 mod terminal;
 
-use alloc::{ boxed::Box, };
-use bouquet_ribbon::message::{ Message, MessageBus, MessageSendee, };
-use client_core::{ program_state::ProgramState, simulation::Simulation };
-use client_core::message::{ ClientMessage, DebugMessage, ServerMessage, };
-use core::{ convert::TryInto, };
-use terminal::{ Terminal, };
+use {
+  alloc::{ boxed::Box, },
+  bouquet_ribbon::message::{ Message, MessageBus, MessageSendee, },
+  client_core::{
+    program_state::ProgramState, simulation::Simulation,
+    message::{ ClientMessage, DebugMessage, ServerMessage, },
+  },
+  core::{ convert::TryInto, },
+  terminal::{ Terminal, },
+};
 
 #[no_mangle]
 pub extern "C" fn run() {

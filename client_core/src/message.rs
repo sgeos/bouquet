@@ -1,4 +1,6 @@
-use alloc::{ fmt::Debug, string::String, };
+use {
+  alloc::{ fmt::Debug, string::String, },
+};
 
 #[derive(Debug, Clone)]
 pub enum ClientMessage
