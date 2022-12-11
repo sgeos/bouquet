@@ -5,13 +5,18 @@ use {
     message::{ ClientMessage, ServerMessage, DebugMessage, },
   },
   bouquet_ribbon::message::{ Message, MessageSendee, },
+  rhai::{ Engine, INT, },
 };
 
-pub struct Simulation { }
+pub struct Simulation {
+  engine: Engine,
+}
 
 impl Simulation {
   pub fn new() -> Simulation {
-    Simulation { }
+    Simulation {
+      engine: Engine::new_raw(),
+    }
   }
 }
 
@@ -30,7 +35,9 @@ impl
       Message::Initialize => ps.persistent_data.done = false,
       Message::Terminate => ps.persistent_data.done = true,
       Message::Update(_) => {
-        ps.next_frame_data.frame = ps.last_frame_data.frame + 1;
+        let increment =
+          self.engine.eval_expression::<INT>("8 + 2").unwrap() as usize;
+        ps.next_frame_data.frame = ps.last_frame_data.frame + increment;
       },
       _ => (),
     }

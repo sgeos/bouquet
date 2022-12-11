@@ -49,7 +49,9 @@ impl Game for PlaydateProgram {
   fn update(&mut self, _playdate: &mut Playdate) -> Result<(), Error> {
     let graphics = Graphics::get();
     graphics.clear(LCDColor::Solid(LCDSolidColor::kColorWhite))?;
-    graphics.draw_text("Hello Bouquet!", self.location)?;
+    let frame = self.program_state.last_frame_data.frame;
+    let message = format!("Hello Bouquet! {}", frame);
+    graphics.draw_text(&message, self.location)?;
 
     let delta_t: usize = 1;
     let ps = &mut self.program_state;
