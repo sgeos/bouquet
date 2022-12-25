@@ -31,7 +31,7 @@ pub extern "C" fn run() {
   mb.register("simulation", simulation);
   mb.register("terminal", terminal);
   mb.send(
-    Message::Debug(DebugMessage::Log(format!("Hello, Bouquet!"))),
+    Message::Debug(DebugMessage::Log(format!("Hello, Bouquet!").into())),
     &mut ps
   );
   mb.send(Message::Initialize, &mut ps);

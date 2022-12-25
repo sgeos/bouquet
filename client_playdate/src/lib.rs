@@ -38,7 +38,7 @@ impl PlaydateProgram {
     let simulation = Box::new(Simulation::new());
     result.message_bus.register("simulation", simulation);
     result.message_bus.send(
-      Message::Debug(DebugMessage::Log(format!("Hello, Bouquet!"))),
+      Message::Debug(DebugMessage::Log(format!("Hello, Bouquet!").into())),
       &mut result.program_state,
     );
     result.message_bus.send(Message::Initialize, &mut result.program_state);

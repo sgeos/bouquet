@@ -1,15 +1,17 @@
 #![allow(deprecated)]
 use {
-  alloc::{ vec::Vec, },
+  alloc::{ format, vec::Vec, },
   crate::{
     program_state::{ ProgramState, PersistentData, FrameData, },
     message::{ ClientMessage, ServerMessage, DebugMessage, },
   },
   bouquet_ribbon::message::{ Message, MessageSendee, },
-  rhai::{ AST, CustomType, Engine, INT, Scope, TypeBuilder, },
+  rhai::{
+    AST, CustomType, Engine, ImmutableString, INT, Scope, TypeBuilder,
+  },
 };
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Mailbox {
   mailbox: Vec<Message::<ClientMessage, ServerMessage, DebugMessage>>,
 }
@@ -39,6 +41,12 @@ impl Mailbox {
     self.mailbox.push(Message::Update(delta_t));
     self
   }
+
+  fn push_debug_log(mut self, message: ImmutableString) -> Mailbox
+  {
+    self.mailbox.push(Message::Debug(DebugMessage::Log(message)));
+    self
+  }
 }
 
 impl CustomType for Mailbox {
@@ -48,18 +56,9 @@ impl CustomType for Mailbox {
       .with_fn("new_mailbox", Self::new)
       .with_fn("push_initialize", Self::push_initialize)
       .with_fn("push_terminate", Self::push_terminate)
-      .with_fn("push_update", Self::push_update);
+      .with_fn("push_update", Self::push_update)
+      .with_fn("push_debug_log", Self::push_debug_log);
   }
-}
-
-fn on_update_default(_delta_t: i64) -> Mailbox
-{
-  Mailbox::new()
-}
-
-fn on_event_default() -> Mailbox
-{
-  Mailbox::new()
 }
 
 pub struct ScriptingEngine {
@@ -73,10 +72,6 @@ impl ScriptingEngine {
     let mut engine = Engine::new_raw();
     engine
       .build_type::<Mailbox>()
-      .register_fn("on_default", on_event_default)
-      .register_fn("on_initialize", on_event_default)
-      .register_fn("on_terminate", on_event_default)
-      .register_fn("on_update", on_update_default)
       .register_type_with_name::<ProgramState>("ProgramState")
       .register_type_with_name::<PersistentData>("PersistentData")
       .register_type_with_name::<FrameData>("FrameData");
@@ -104,21 +99,29 @@ impl
     let engine = &self.engine;
     let scope = &mut self.scope;
     let ast = &self.ast;
+    //let result: Result<Mailbox, Box<EvalAltResult>> = match message {
     let result = match message {
       Message::Initialize => {
-        engine.call_fn::<>(scope, ast, "on_initialize", () )
+        engine.call_fn::<Mailbox>(scope, ast, "on_initialize", () )
       },
       Message::Terminate => {
-        engine.call_fn::<>(scope, ast, "on_terminate", () )
+        engine.call_fn::<Mailbox>(scope, ast, "on_terminate", () )
       },
       Message::Update(delta_t) => {
-        engine.call_fn::<>(scope, ast, "on_update", ( delta_t, ) )
+        engine.call_fn::<Mailbox>(scope, ast, "on_update", ( delta_t, ) )
       },
-      _ => {
-        engine.call_fn::<>(scope, ast, "on_default", () )
-      },
-    };
-    return result.unwrap_or(Mailbox::new()).mailbox;
+      _ => Ok(Mailbox::new()),
+    }.unwrap_or_else(
+      |err| {
+        match *err {
+          //EvalAltResult::ErrorFunctionNotFound(..) => Mailbox::new(),
+          _ => Mailbox::new().push_debug_log(format!("{:?}", err).into()),
+        }
+      }
+    );
+    //.push_debug_log(format!("{:?}", message).into());
+    result.mailbox
+    //Mailbox::new().push_debug_log(format!("{:?}", result.mailbox).into()).mailbox
   }
 }
 

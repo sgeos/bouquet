@@ -1,5 +1,6 @@
 use {
-  alloc::{ fmt::Debug, string::String, },
+  alloc::{ fmt::Debug, },
+  rhai::{ ImmutableString, },
 };
 
 #[derive(Debug, Clone)]
@@ -17,7 +18,7 @@ pub enum ServerMessage
 #[derive(Debug)]
 pub enum DebugMessage
 {
-  Log(String),
+  Log(ImmutableString),
   Message,
 }
 

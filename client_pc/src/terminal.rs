@@ -60,7 +60,7 @@ impl
             let output =
               args
               .fold(String::new(), |a, b| a + " " + b).trim().to_string();
-            result.push(Message::Debug(DebugMessage::Log(output)));
+            result.push(Message::Debug(DebugMessage::Log(output.into())));
           },
           "server" => {
             result.push(Message::Server(ServerMessage::Message));
