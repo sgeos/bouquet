@@ -1,21 +1,21 @@
 use {
   alloc::{ vec::Vec, },
   crate::{
-    program_state::ProgramState,
+    program_state::{ ProgramState, },
     message::{ ClientMessage, ServerMessage, DebugMessage, },
+    script::{ ScriptingEngine, },
   },
   bouquet_ribbon::message::{ Message, MessageSendee, },
-  rhai::{ Engine, INT, },
 };
 
 pub struct Simulation {
-  engine: Engine,
+  scripting_engine: ScriptingEngine,
 }
 
 impl Simulation {
   pub fn new() -> Simulation {
     Simulation {
-      engine: Engine::new_raw(),
+      scripting_engine: ScriptingEngine::new(),
     }
   }
 }
@@ -30,14 +30,12 @@ impl
     ps: &mut ProgramState,
   ) -> Vec<Message::<ClientMessage, ServerMessage, DebugMessage>>
   {
-    let result = Vec::new();
+    let result = self.scripting_engine.send(message.clone(), ps);
     match message {
       Message::Initialize => ps.persistent_data.done = false,
       Message::Terminate => ps.persistent_data.done = true,
       Message::Update(_) => {
-        let increment =
-          self.engine.eval_expression::<INT>("8 + 2").unwrap() as usize;
-        ps.next_frame_data.frame = ps.last_frame_data.frame + increment;
+        ps.next_frame_data.frame = ps.last_frame_data.frame + 1;
       },
       _ => (),
     }

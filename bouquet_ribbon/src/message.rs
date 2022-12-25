@@ -3,6 +3,7 @@ use {
     boxed::Box, fmt::Debug, string::String, vec::Vec,
   },
   hashbrown::HashMap,
+  rhai::{ INT, },
 };
 
 #[derive(Debug, Clone)]
@@ -11,7 +12,7 @@ pub enum Message<C, S, D>
 {
   Initialize,
   Terminate,
-  Update(usize),
+  Update(INT),
   Client(C),
   Server(S),
   Debug(D),

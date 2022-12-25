@@ -6,6 +6,7 @@ use {
     message::{ ClientMessage, DebugMessage, ServerMessage, },
   },
   core::{ convert::TryInto, },
+  rhai::{ INT, },
 };
 
 pub struct Terminal { }
@@ -66,7 +67,7 @@ impl
           },
           "terminate" => result.push(Message::Terminate),
           "update" => {
-            let duration: usize = args.next()
+            let duration: INT = args.next()
               .unwrap_or("0").parse().unwrap_or(0);
             result.push(Message::Update(duration))
           },

@@ -1,3 +1,5 @@
+use rhai::{ INT, };
+
 #[derive(Debug, Clone)]
 pub struct ProgramState
 {
@@ -37,7 +39,7 @@ impl PersistentData {
 #[derive(Debug, Clone)]
 pub struct FrameData
 {
-  pub frame: usize,
+  pub frame: INT,
 }
 
 impl FrameData {

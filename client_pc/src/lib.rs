@@ -15,6 +15,7 @@ use {
     message::{ ClientMessage, DebugMessage, ServerMessage, },
   },
   core::{ convert::TryInto, },
+  rhai::{ INT, },
   terminal::{ Terminal, },
 };
 
@@ -37,7 +38,7 @@ pub extern "C" fn run() {
   while !ps.persistent_data.done {
     let old_time = time;
     time = unsafe { libc::time(0 as *mut i64) };
-    let delta_t: usize = (time - old_time).try_into().unwrap_or(0);
+    let delta_t: INT = (time - old_time).try_into().unwrap_or(0);
     mb.send(Message::Update(delta_t), &mut ps);
     ps.next_frame();
   }

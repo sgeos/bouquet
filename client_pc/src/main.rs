@@ -2,7 +2,6 @@
 #![no_main]
 #![feature(lang_items)]
 
-#![feature(default_alloc_error_handler)]
 #[global_allocator]
 static ALLOCATOR: ::libc_alloc::LibcAlloc = ::libc_alloc::LibcAlloc;
 

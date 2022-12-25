@@ -5,4 +5,5 @@ edition.workspace = true
 
 [dependencies]
 hashbrown = "0.12"
+rhai = { version = "1.11.0", features = [ "no_std", "no_float", "only_i32" ], default_features = false }
 

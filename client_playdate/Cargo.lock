@@ -66,6 +66,7 @@ name = "bouquet_ribbon"
 version = "0.1.1"
 dependencies = [
  "hashbrown 0.12.3",
+ "rhai",
 ]
 
 [[package]]
@@ -103,6 +104,7 @@ dependencies = [
  "heapless",
  "libc",
  "libc_alloc",
+ "rhai",
 ]
 
 [[package]]

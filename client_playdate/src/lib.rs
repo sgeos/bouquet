@@ -17,6 +17,7 @@ use {
     Playdate,
   },
   euclid::point2,
+  rhai::{ INT, },
 };
 
 struct PlaydateProgram {
@@ -53,7 +54,7 @@ impl Game for PlaydateProgram {
     let message = format!("Hello Bouquet! {}", frame);
     graphics.draw_text(&message, self.location)?;
 
-    let delta_t: usize = 1;
+    let delta_t: INT = 1;
     let ps = &mut self.program_state;
     self.message_bus.send(Message::Update(delta_t), ps);
     self.message_bus.send(Message::Terminate, ps);
