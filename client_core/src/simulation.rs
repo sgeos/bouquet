@@ -14,8 +14,9 @@ pub struct Simulation {
 
 impl Simulation {
   pub fn new() -> Simulation {
+    let script = include_str!("../rhaiscript/simulation.rhai");
     Simulation {
-      scripting_engine: ScriptingEngine::new(),
+      scripting_engine: ScriptingEngine::new(script),
     }
   }
 }

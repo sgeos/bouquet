@@ -7,7 +7,9 @@ use {
   },
   bouquet_ribbon::message::{ Message, MessageSendee, },
   rhai::{
-    AST, CustomType, Engine, ImmutableString, INT, Scope, TypeBuilder,
+    AST, CustomType, Engine, EvalAltResult, ImmutableString, INT,
+    packages::{ CorePackage, MoreStringPackage, Package, },
+    ParseError, Scope, TypeBuilder,
   },
 };
 
@@ -68,21 +70,54 @@ pub struct ScriptingEngine {
 }
 
 impl ScriptingEngine {
-  pub fn new() -> ScriptingEngine {
+  pub fn new(script: &str) -> ScriptingEngine {
     let mut engine = Engine::new_raw();
     engine
       .build_type::<Mailbox>()
       .register_type_with_name::<ProgramState>("ProgramState")
       .register_type_with_name::<PersistentData>("PersistentData")
-      .register_type_with_name::<FrameData>("FrameData");
+      .register_type_with_name::<FrameData>("FrameData")
+      .set_max_expr_depths(32, 32);
+    CorePackage::new().register_into_engine(&mut engine);
+    MoreStringPackage::new().register_into_engine(&mut engine);
     let scope = Scope::new();
-    let script = include_str!("../rhaiscript/simulation.rhai");
-    let ast = engine.compile(script).unwrap();
+    let ast = engine.compile(script).unwrap_or(
+      engine.compile("").unwrap()
+    );
     ScriptingEngine {
       engine: engine,
       scope: scope,
       ast: ast,
     }
+  }
+
+  pub fn compile(&mut self, script: &str) -> Result<AST, ParseError>
+  {
+    self.engine.compile(script)
+  }
+
+  pub fn set_ast(&mut self, ast: AST)
+  {
+    self.ast = ast;
+  }
+
+  pub fn compile_and_set_ast(&mut self, script: &str) -> Result<AST, ParseError>
+  {
+    let result = self.engine.compile(script);
+    if let Ok(ast) = result.clone() {
+      self.ast = ast;
+    }
+    result
+  }
+
+  pub fn validate_script(&mut self, script: &str)
+    -> Message<ClientMessage, ServerMessage, DebugMessage>
+  {
+    let message = match self.engine.compile(script) {
+      Ok(_) => format!("Script OK.").into(),
+      Err(err) => format!("{}", err).into(),
+    };
+    Message::Debug(DebugMessage::Log(message))
   }
 }
 
@@ -99,7 +134,6 @@ impl
     let engine = &self.engine;
     let scope = &mut self.scope;
     let ast = &self.ast;
-    //let result: Result<Mailbox, Box<EvalAltResult>> = match message {
     let result = match message {
       Message::Initialize => {
         engine.call_fn::<Mailbox>(scope, ast, "on_initialize", () )
@@ -114,14 +148,12 @@ impl
     }.unwrap_or_else(
       |err| {
         match *err {
-          //EvalAltResult::ErrorFunctionNotFound(..) => Mailbox::new(),
-          _ => Mailbox::new().push_debug_log(format!("{:?}", err).into()),
+          EvalAltResult::ErrorFunctionNotFound(..) => Mailbox::new(),
+          _ => Mailbox::new().push_debug_log(format!("Simulation Scripting Error: {:?}", err).into()),
         }
       }
     );
-    //.push_debug_log(format!("{:?}", message).into());
     result.mailbox
-    //Mailbox::new().push_debug_log(format!("{:?}", result.mailbox).into()).mailbox
   }
 }
 
