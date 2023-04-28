@@ -3,6 +3,8 @@
 #[macro_use]
 extern crate alloc;
 
+mod logger;
+
 const HELLO_MESSAGE: &str = "Hello Bouquet!";
 const INITIAL_X: i32 = (400 - TEXT_WIDTH) / 2;
 const INITIAL_Y: i32 = (240 - TEXT_HEIGHT) / 2;
@@ -21,6 +23,9 @@ use {
     crankstart_game, Game, geometry::ScreenPoint,
     graphics::{ Graphics, LCDColor, LCDSolidColor, },
     Playdate,
+  },
+  crate::{
+    logger::Logger,
   },
   euclid::point2,
   rhai::{ INT, },
@@ -41,15 +46,19 @@ impl PlaydateProgram {
       message_bus: MessageBus::new(),
       program_state: ProgramState::new(),
     };
-/*
-    let mut simulation = Box::new(Simulation::new());
-    // simulation.send(Arc::new(Message::Initialize), &mut result.program_state);
+    let logger = Box::new(Logger::new());
+    let simulation = Box::new(Simulation::new());
+    //crankstart::system::System::log_to_console(HELLO_MESSAGE);
+    //logger.send(Arc::new(Message::Initialize), &mut result.program_state);
+    //simulation.send(Arc::new(Message::Initialize), &mut result.program_state);
+    result.message_bus.register("logger", logger);
     result.message_bus.register("simulation", simulation);
     result.message_bus.send(
-      Message::Debug(Arc::new(DebugMessage::Log(format!("Hello, Bouquet!").into()))),
+      Arc::new(Message::Debug(DebugMessage::Log(HELLO_MESSAGE.into()))),
       &mut result.program_state,
     );
     result.message_bus.send(Arc::new(Message::Initialize), &mut result.program_state);
+/*
 */
     Ok(Box::new(result))
   }
@@ -63,12 +72,11 @@ impl Game for PlaydateProgram {
     let message = format!("{} {}", HELLO_MESSAGE, frame);
     graphics.draw_text(&message, self.location)?;
 
-/*
     let delta_t: INT = 1;
     let ps = &mut self.program_state;
     self.message_bus.send(Arc::new(Message::Update(delta_t)), ps);
-    self.message_bus.send(Arc::new(Message::Terminate), ps);
     self.program_state.next_frame();
+/*
 */
     Ok(())
   }
