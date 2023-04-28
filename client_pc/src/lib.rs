@@ -8,7 +8,7 @@ extern crate libc;
 mod terminal;
 
 use {
-  alloc::{ boxed::Box, },
+  alloc::{ boxed::Box, sync::Arc, },
   bouquet_ribbon::message::{ Message, MessageBus, MessageSendee, },
   client_core::{
     program_state::ProgramState, simulation::Simulation,
@@ -31,15 +31,15 @@ pub extern "C" fn run() {
   mb.register("simulation", simulation);
   mb.register("terminal", terminal);
   mb.send(
-    Message::Debug(DebugMessage::Log(format!("Hello, Bouquet!").into())),
+    Arc::new(Message::Debug(DebugMessage::Log(format!("Hello, Bouquet!").into()))),
     &mut ps
   );
-  mb.send(Message::Initialize, &mut ps);
+  mb.send(Arc::new(Message::Initialize), &mut ps);
   while !ps.persistent_data.done {
     let old_time = time;
     time = unsafe { libc::time(0 as *mut i64) };
     let delta_t: INT = (time - old_time).try_into().unwrap_or(0);
-    mb.send(Message::Update(delta_t), &mut ps);
+    mb.send(Arc::new(Message::Update(delta_t)), &mut ps);
     ps.next_frame();
   }
   mb.unregister("simulation");

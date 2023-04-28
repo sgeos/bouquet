@@ -4,17 +4,6 @@ version = 3
 
 [[package]]
 name = "ahash"
-version = "0.7.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fcb51a0695d8f838b1ee009b3fbf66bda078cd64590202a864a8f3e8c4315c47"
-dependencies = [
- "getrandom",
- "once_cell",
- "version_check",
-]
-
-[[package]]
-name = "ahash"
 version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bf6ccdb167abbf410dcb915cabd428929d7f6a04980b54a11f26a39f1c7f7107"
@@ -41,7 +30,7 @@ checksum = "bef38d45163c2f1dde094a7dfd33ccf595c92905c8f8f4fdc18d06fb1037718a"
 name = "bouquet_ribbon"
 version = "0.1.1"
 dependencies = [
- "hashbrown 0.12.3",
+ "hashbrown",
  "rhai",
 ]
 
@@ -65,7 +54,7 @@ version = "0.1.1"
 dependencies = [
  "bouquet_ribbon",
  "client_core",
- "hashbrown 0.12.3",
+ "hashbrown",
  "libc",
  "libc_alloc",
  "rhai",
@@ -121,20 +110,11 @@ dependencies = [
 
 [[package]]
 name = "hashbrown"
-version = "0.12.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8a9ee70c43aaf417c914396645a0fa852624801b24ebb7ae78fe8272889ac888"
-dependencies = [
- "ahash 0.7.6",
-]
-
-[[package]]
-name = "hashbrown"
 version = "0.13.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "33ff8ae62cd3a9102e5637afc8452c55acf3844001bd5374e0b0bd7b6616c038"
 dependencies = [
- "ahash 0.8.2",
+ "ahash",
 ]
 
 [[package]]
@@ -212,14 +192,14 @@ dependencies = [
 
 [[package]]
 name = "rhai"
-version = "1.11.0"
+version = "1.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0f61559c2ea5fef5af856ae95443111dc14e7c9ce73d29c257a840249c0ed298"
+checksum = "fd29fa1f740be6dc91982013957e08c3c4232d7efcfe19e12da87d50bad47758"
 dependencies = [
- "ahash 0.8.2",
+ "ahash",
  "bitflags",
  "core-error",
- "hashbrown 0.13.1",
+ "hashbrown",
  "instant",
  "libm",
  "no-std-compat",
@@ -231,9 +211,9 @@ dependencies = [
 
 [[package]]
 name = "rhai_codegen"
-version = "1.4.4"
+version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c087528477f486dd71d6dc98a922d92403f0cfdaf317d670542caffb0a770164"
+checksum = "db74e3fdd29d969a0ec1f8e79171a6f0f71d0429293656901db382d248c4c021"
 dependencies = [
  "proc-macro2",
  "quote",

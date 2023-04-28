@@ -1,5 +1,5 @@
 use {
-  alloc::{ vec::Vec, },
+  alloc::{ sync::Arc, vec::Vec, },
   crate::{
     program_state::{ ProgramState, },
     message::{ ClientMessage, ServerMessage, DebugMessage, },
@@ -27,12 +27,12 @@ impl
 {
   fn send(
     &mut self,
-    message: Message::<ClientMessage, ServerMessage, DebugMessage>,
+    message: Arc::<Message::<ClientMessage, ServerMessage, DebugMessage>>,
     ps: &mut ProgramState,
-  ) -> Vec<Message::<ClientMessage, ServerMessage, DebugMessage>>
+  ) -> Vec<Arc::<Message::<ClientMessage, ServerMessage, DebugMessage>>>
   {
     let result = self.scripting_engine.send(message.clone(), ps);
-    match message {
+    match *message {
       Message::Initialize => ps.persistent_data.done = false,
       Message::Terminate => ps.persistent_data.done = true,
       Message::Update(_) => {

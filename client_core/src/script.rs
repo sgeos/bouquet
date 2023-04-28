@@ -1,6 +1,6 @@
 #![allow(deprecated)]
 use {
-  alloc::{ format, vec::Vec, },
+  alloc::{ format, sync::Arc, vec::Vec, },
   crate::{
     program_state::{ ProgramState, PersistentData, FrameData, },
     message::{ ClientMessage, ServerMessage, DebugMessage, },
@@ -15,7 +15,7 @@ use {
 
 #[derive(Clone, Debug)]
 pub struct Mailbox {
-  mailbox: Vec<Message::<ClientMessage, ServerMessage, DebugMessage>>,
+  mailbox: Vec<Arc::<Message::<ClientMessage, ServerMessage, DebugMessage>>>,
 }
 
 impl Mailbox {
@@ -28,25 +28,25 @@ impl Mailbox {
 
   fn push_initialize(mut self) -> Mailbox
   {
-    self.mailbox.push(Message::Initialize);
+    self.mailbox.push(Arc::new(Message::Initialize));
     self
   }
 
   fn push_terminate(mut self) -> Mailbox
   {
-    self.mailbox.push(Message::Terminate);
+    self.mailbox.push(Arc::new(Message::Terminate));
     self
   }
 
   fn push_update(mut self, delta_t: INT) -> Mailbox
   {
-    self.mailbox.push(Message::Update(delta_t));
+    self.mailbox.push(Arc::new(Message::Update(delta_t)));
     self
   }
 
   fn push_debug_log(mut self, message: ImmutableString) -> Mailbox
   {
-    self.mailbox.push(Message::Debug(DebugMessage::Log(message)));
+    self.mailbox.push(Arc::new(Message::Debug(DebugMessage::Log(message))));
     self
   }
 }
@@ -111,13 +111,13 @@ impl ScriptingEngine {
   }
 
   pub fn validate_script(&mut self, script: &str)
-    -> Message<ClientMessage, ServerMessage, DebugMessage>
+    -> Arc::<Message<ClientMessage, ServerMessage, DebugMessage>>
   {
     let message = match self.engine.compile(script) {
       Ok(_) => format!("Script OK.").into(),
       Err(err) => format!("{}", err).into(),
     };
-    Message::Debug(DebugMessage::Log(message))
+    Arc::new(Message::Debug(DebugMessage::Log(message)))
   }
 }
 
@@ -127,14 +127,14 @@ impl
 {
   fn send(
     &mut self,
-    message: Message::<ClientMessage, ServerMessage, DebugMessage>,
+    message: Arc::<Message::<ClientMessage, ServerMessage, DebugMessage>>,
     _ps: &mut ProgramState,
-  ) -> Vec<Message::<ClientMessage, ServerMessage, DebugMessage>>
+  ) -> Vec<Arc::<Message::<ClientMessage, ServerMessage, DebugMessage>>>
   {
     let engine = &self.engine;
     let scope = &mut self.scope;
     let ast = &self.ast;
-    let result = match message {
+    let result = match *message {
       Message::Initialize => {
         engine.call_fn::<Mailbox>(scope, ast, "on_initialize", () )
       },

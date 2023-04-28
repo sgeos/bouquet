@@ -5,5 +5,5 @@ edition.workspace = true
 
 [dependencies]
 bouquet_ribbon = { path = "../bouquet_ribbon" }
-rhai = { version = "1.11.0", features = [ "no_std", "no_float", "only_i32" ], default_features = false }
+rhai = { version = "1.13", features = [ "no_std", "no_float", "only_i32" ], default_features = false }
 

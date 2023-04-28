@@ -1,5 +1,5 @@
 use {
-  alloc::{ string::String, string::ToString, vec::Vec, },
+  alloc::{ string::String, string::ToString, sync::Arc, vec::Vec, },
   bouquet_ribbon::message::{ Message, MessageSendee, },
   client_core::{
     program_state::ProgramState,
@@ -23,12 +23,12 @@ impl
 {
   fn send(
     &mut self,
-    message: Message::<ClientMessage, ServerMessage, DebugMessage>,
+    message: Arc::<Message::<ClientMessage, ServerMessage, DebugMessage>>,
     program_state: &mut ProgramState,
-  ) -> Vec<Message::<ClientMessage, ServerMessage, DebugMessage>>
+  ) -> Vec<Arc::<Message::<ClientMessage, ServerMessage, DebugMessage>>>
   {
     let mut result = Vec::new();
-    match message {
+    match &*message {
       Message::Initialize => log("Initializing program."),
       Message::Terminate => log("Terminating program."),
       Message::Update(duration) => {
@@ -41,35 +41,35 @@ impl
         let command = args.next().unwrap_or("");
         match command.to_lowercase().as_str() {
           "client" => {
-            result.push(Message::Client(ClientMessage::Message));
+            result.push(Arc::new(Message::Client(ClientMessage::Message)));
           },
           "debug" => {
-            result.push(Message::Debug(DebugMessage::Message));
+            result.push(Arc::new(Message::Debug(DebugMessage::Message)));
           },
           "done" => {
             log(format!("Done: {}", program_state.persistent_data.done));
           },
           "exit" | "quit" => {
-            result.push(Message::Terminate);
+            result.push(Arc::new(Message::Terminate));
           },
           "frame" => {
             log(format!("Frame: {}", program_state.last_frame_data.frame));
           },
-          "initialize" => result.push(Message::Initialize),
+          "initialize" => result.push(Arc::new(Message::Initialize)),
           "log" => {
             let output =
               args
               .fold(String::new(), |a, b| a + " " + b).trim().to_string();
-            result.push(Message::Debug(DebugMessage::Log(output.into())));
+            result.push(Arc::new(Message::Debug(DebugMessage::Log(output.into()))));
           },
           "server" => {
-            result.push(Message::Server(ServerMessage::Message));
+            result.push(Arc::new(Message::Server(ServerMessage::Message)));
           },
-          "terminate" => result.push(Message::Terminate),
+          "terminate" => result.push(Arc::new(Message::Terminate)),
           "update" => {
             let duration: INT = args.next()
               .unwrap_or("0").parse().unwrap_or(0);
-            result.push(Message::Update(duration))
+            result.push(Arc::new(Message::Update(duration)))
           },
           "" => (),
           _ => {

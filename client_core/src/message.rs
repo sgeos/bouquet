@@ -3,13 +3,13 @@ use {
   rhai::{ ImmutableString, },
 };
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum ClientMessage
 {
   Message,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum ServerMessage
 {
   Message,
@@ -20,14 +20,5 @@ pub enum DebugMessage
 {
   Log(ImmutableString),
   Message,
-}
-
-impl Clone for DebugMessage {
-  fn clone(&self) -> DebugMessage {
-    match self {
-      DebugMessage::Log(s) => DebugMessage::Log(s.clone()),
-      DebugMessage::Message => DebugMessage::Message,
-    }
-  }
 }
 

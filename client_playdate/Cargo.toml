@@ -17,7 +17,6 @@ crate-type = ["staticlib", "cdylib"]
 panic = "abort"
 opt-level = 'z'
 lto = true
-overflow-checks = false
 
 [profile.release]
 panic = "abort"
@@ -31,11 +30,11 @@ crankstart = { path = "../../crankstart" }
 crankstart-sys = { path = "../../crankstart/crankstart-sys" }
 client_core = { path = "../client_core" }
 euclid = { version = "0.20.13", default-features = false, features = [ "libm" ] }
-hashbrown = "0.7.2"
+hashbrown = "0.13"
 heapless = "0.5.5"
 libc = { version = "0.2", default-features = false }
-libc_alloc = "1.0.3"
-rhai = { version = "1.11.0", features = [ "no_std", "no_float", "only_i32" ], default_features = false }
+libc_alloc = "1.0.4"
+rhai = { version = "1.13.0", features = [ "no_std", "no_float", "only_i32" ], default_features = false }
 
 [dependencies.cstr_core]
 version = "=0.1.2"
