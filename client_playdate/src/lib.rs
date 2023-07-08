@@ -4,6 +4,7 @@
 extern crate alloc;
 
 mod logger;
+mod renderer;
 
 const HELLO_MESSAGE: &str = "Hello Bouquet!";
 const FONT_PATH: &str = "/System/Fonts/Asheville-Sans-14-Bold.pft";
@@ -27,6 +28,7 @@ use {
   },
   crate::{
     logger::Logger,
+    renderer::Renderer,
   },
   euclid::point2,
   rhai::{ INT, },
@@ -67,7 +69,12 @@ impl PlaydateProgram {
     Ok(Box::new(result))
   }
 
-  fn update_render_position(&mut self, text_width: i32) {
+  fn render_message(&mut self) -> Result<(), Error> {
+    let graphics = Graphics::get();
+    let frame = self.program_state.last_frame_data.frame;
+    let message = format!("{} {}", HELLO_MESSAGE, frame);
+    let text_width = graphics.get_text_width(&self.font, &message, 0)?;
+
     let x = self.location.x;
     let x_speed = self.speed.x;
     let max_x = crankstart_sys::LCD_COLUMNS as i32 - text_width;
@@ -83,16 +90,25 @@ impl PlaydateProgram {
       self.speed.y *= -1;
     }
     self.location.y += self.speed.y;
+
+    graphics.draw_text(&message, self.location)?;
+    Ok(())
   }
 
   fn render(&mut self) -> Result<(), Error> {
     let graphics = Graphics::get();
-    graphics.clear(LCDColor::Solid(LCDSolidColor::kColorWhite))?;
-    let frame = self.program_state.last_frame_data.frame;
-    let message = format!("{} {}", HELLO_MESSAGE, frame);
-    let text_width = graphics.get_text_width(&self.font, &message, 0)?;
-    self.update_render_position(text_width);
-    graphics.draw_text(&message, self.location)?;
+    graphics.clear(LCDColor::Solid(LCDSolidColor::kColorBlack))?;
+    Renderer::render_box(96, 192, 1, point2(INITIAL_X, INITIAL_Y))?;
+    Renderer::render_box(32, 20, 1, point2(self.location.x + 32, self.location.y + 16))?;
+    Renderer::render_box(32, 24, 1, point2(self.location.x + 16, self.location.y + 24))?;
+    Renderer::render_box(32, 28, 1, point2(self.location.x + 0, self.location.y + 32))?;
+    Renderer::render_box(32, 32, 1, point2(self.location.x + 0, self.location.y + 0))?;
+    Renderer::render_box(32, 32, 1, point2(self.location.x - 16, self.location.y + 8))?;
+    Renderer::render_box(32, 32, 1, point2(self.location.x - 32, self.location.y + 16))?;
+    Renderer::render_box(32, 32, 1, point2(self.location.x + 0, self.location.y + 16))?;
+    Renderer::render_box(32, 32, 1, point2(self.location.x + 0, self.location.y - 16))?;
+    Renderer::render_box(96, 96, 1, point2(64,64))?;
+    self.render_message()?;
     Ok(())
   }
 }
@@ -103,8 +119,6 @@ impl Game for PlaydateProgram {
     let ps = &mut self.program_state;
     self.message_bus.send(Arc::new(Message::Update(delta_t)), ps);
     self.program_state.next_frame();
-
-
     self.render()
   }
 }
