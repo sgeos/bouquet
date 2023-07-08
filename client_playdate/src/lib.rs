@@ -23,8 +23,10 @@ use {
   },
   crankstart::{
     crankstart_game, Game, geometry::ScreenPoint,
-    graphics::{ Font, Graphics, LCDColor, LCDSolidColor, },
-    Playdate,
+    graphics::{
+      Font, Graphics, LCDColor, LCDBitmapDrawMode, LCDSolidColor,
+    },
+    Playdate, system::System, 
   },
   crate::{
     logger::Logger,
@@ -91,7 +93,17 @@ impl PlaydateProgram {
     }
     self.location.y += self.speed.y;
 
+    let x = self.location.x;
+    let y = self.location.y;
+    graphics.set_draw_mode(LCDBitmapDrawMode::kDrawModeCopy)?;
+    graphics.draw_text(&message, point2(x-1,y))?;
+    graphics.draw_text(&message, point2(x+1,y))?;
+    graphics.draw_text(&message, point2(x,y-1))?;
+    graphics.draw_text(&message, point2(x,y+1))?;
+    graphics.set_draw_mode(LCDBitmapDrawMode::kDrawModeInverted)?;
     graphics.draw_text(&message, self.location)?;
+    System::get().draw_fps(0, 0)?;
+    graphics.set_draw_mode(LCDBitmapDrawMode::kDrawModeCopy)?;
     Ok(())
   }
 
