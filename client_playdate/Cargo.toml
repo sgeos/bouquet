@@ -24,17 +24,17 @@ opt-level = 'z'
 lto = true
 
 [dependencies]
-anyhow = { version = "1.0.31", default-features = false }
+anyhow = { version = "1.0", default-features = false }
 bouquet_ribbon = { path = "../bouquet_ribbon" }
 crankstart = { path = "../../crankstart" }
 crankstart-sys = { path = "../../crankstart/crankstart-sys" }
 client_core = { path = "../client_core" }
-euclid = { version = "0.20.13", default-features = false, features = [ "libm" ] }
-hashbrown = "0.13"
-heapless = "0.5.5"
+euclid = { version = "0.20.14", default-features = false, features = [ "libm" ] }
+hashbrown = "0.14"
+heapless = "0.7"
 libc = { version = "0.2", default-features = false }
-libc_alloc = "1.0.4"
-rhai = { version = "1.13.0", features = [ "no_std", "no_float", "only_i32" ], default_features = false }
+libc_alloc = "1.0"
+rhai = { version = "1.15.1", features = [ "no_std", "no_float", "only_i32" ], default_features = false }
 
 [dependencies.cstr_core]
 version = "=0.1.2"

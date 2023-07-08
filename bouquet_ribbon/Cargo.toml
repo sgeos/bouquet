@@ -4,6 +4,6 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
-hashbrown = "0.13"
-rhai = { version = "1.13", features = [ "no_std", "no_float", "only_i32" ], default_features = false }
+hashbrown = "0.14"
+rhai = { version = "1.15.1", features = [ "no_std", "no_float", "only_i32" ], default_features = false }
 

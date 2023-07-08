@@ -11,6 +11,7 @@ members = [
 exclude = [
   "client_playdate",
 ]
+resolver = "2"
 
 [profile.dev]
 panic = "abort"
@@ -19,6 +20,6 @@ lto = true
 
 [profile.release]
 panic = "abort"
-opt-level = 'z'
+opt-level = "z"
 lto = true
 

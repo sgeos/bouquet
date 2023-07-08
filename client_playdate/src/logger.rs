@@ -1,5 +1,5 @@
 use {
-  alloc::{ sync::Arc, vec::Vec, },
+  alloc::{ format, sync::Arc, vec::Vec, },
   bouquet_ribbon::message::{ Message, MessageSendee, },
   client_core::{
     program_state::ProgramState,
