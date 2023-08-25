@@ -1,0 +1,8 @@
+[package]
+name = "bouquet_client_core"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+bouquet_core = { path = "../bouquet_core" }
+

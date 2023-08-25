@@ -1,0 +1,8 @@
+[package]
+name = "bouquet_core"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+hashbrown = "0.14"
+

@@ -4,9 +4,9 @@ edition = "2021"
 
 [workspace]
 members = [
-  "client_core",
+  "bouquet_client_core",
+  "bouquet_core",
   "client_pc",
-  "bouquet_ribbon",
 ]
 exclude = [
   "client_playdate",
