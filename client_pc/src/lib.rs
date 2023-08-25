@@ -14,7 +14,7 @@ use {
     bouquet_core::{
         message::Message,
         message_bus::{MessageBus, MessageSendee},
-        rendering::{BouquetFloat, Color, Renderer},
+        rendering::*,
     },
     core::convert::TryInto,
     fermium::prelude::*,
@@ -31,6 +31,19 @@ pub extern "C" fn run() {
         b: 0.8,
         a: 1.0,
     });
+    // draw text
+    let text = Text {
+        content: "Hello, Bouquet!".to_string(),
+        position: Vec2 { x: 10.0, y: 10.0 },
+        color: Color {
+            r: 1.0,
+            g: 1.0,
+            b: 1.0,
+            a: 1.0,
+        },
+        size: 32.0,
+    };
+    renderer.draw_text(&text);
     renderer.present();
 
     let mut ps = ProgramState::new();

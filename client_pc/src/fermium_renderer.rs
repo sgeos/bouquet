@@ -1,7 +1,9 @@
 use {
-    alloc::string::String,
+    alloc::{string::String, vec::Vec},
     bouquet_core::rendering::{Color, Renderer, Sprite, Text},
     fermium::prelude::*,
+    libm::ceilf,
+    rusttype::{point, Font, Scale},
 };
 
 pub struct FermiumRenderer {
@@ -77,11 +79,79 @@ impl Renderer for FermiumRenderer {
         }
     }
 
-    fn draw_text(&self, _text: &Text) {
-        // Fermium does not provide direct text rendering. You'd need to use something like SDL_ttf.
-        // After you have the text rendered to a texture, you can draw it similar to a sprite.
-        // For now, just a placeholder:
-        // TODO: Implement text rendering via a TTF solution or bitmap fonts.
+    fn draw_text(&self, text: &Text) {
+        // buffer extend is a fudge factor to handle glyphs with negative
+        // bounding box values, these values may need to be increased
+        let buffer_extend_x = 4;
+        let buffer_extend_y = 4.0;
+        let font_data = include_bytes!("../../data/fonts/hakidame.ttf");
+        let font = Font::try_from_bytes(font_data as &[u8]).expect("Error constructing Font");
+
+        let scale = Scale::uniform(text.size);
+        let v_metrics = font.v_metrics(scale);
+
+        let glyphs: Vec<_> = font
+            .layout(&text.content, scale, point(0.0, v_metrics.ascent))
+            .collect();
+
+        let glyphs_height = ceilf(v_metrics.ascent - v_metrics.descent + buffer_extend_y) as u32;
+        let glyphs_width = {
+            let min_x = glyphs
+                .first()
+                .map(|g| g.pixel_bounding_box().unwrap().min.x)
+                .unwrap();
+            let max_x = glyphs
+                .last()
+                .map(|g| g.pixel_bounding_box().unwrap().max.x)
+                .unwrap();
+            (max_x - min_x + buffer_extend_x) as u32
+        };
+
+        let mut buffer: Vec<u8> = vec![0; (glyphs_width * glyphs_height * 4) as usize];
+
+        for glyph in glyphs {
+            if let Some(bounding_box) = glyph.pixel_bounding_box() {
+                let x_offset = bounding_box.min.x.max(0) as u32;
+                let y_offset = bounding_box.min.y.max(0) as u32;
+                glyph.draw(|x, y, v| {
+                    let base = ((x + x_offset) + (y + y_offset) * glyphs_width) as usize * 4;
+                    buffer[base] = (text.color.r * 255.0) as u8;
+                    buffer[base + 1] = (text.color.g * 255.0) as u8;
+                    buffer[base + 2] = (text.color.b * 255.0) as u8;
+                    buffer[base + 3] = (v * 255.0) as u8;
+                });
+            }
+        }
+
+        let texture = unsafe {
+            let tex = SDL_CreateTexture(
+                self.renderer,
+                SDL_PIXELFORMAT_RGBA32.0,
+                SDL_TEXTUREACCESS_STATIC.0,
+                glyphs_width as i32,
+                glyphs_height as i32,
+            );
+            SDL_UpdateTexture(
+                tex,
+                core::ptr::null(),
+                buffer.as_ptr() as *const _,
+                (glyphs_width * 4) as i32,
+            );
+            tex
+        };
+
+        let dst_rect = SDL_Rect {
+            x: text.position.x as i32,
+            y: text.position.y as i32,
+            w: glyphs_width as i32,
+            h: glyphs_height as i32,
+        };
+
+        unsafe {
+            SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+            SDL_RenderCopy(self.renderer, texture, core::ptr::null(), &dst_rect);
+            SDL_DestroyTexture(texture); // Important: Free the texture after using
+        }
     }
 
     fn present(&self) {
